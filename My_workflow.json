@@ -1,0 +1,779 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1IOazdNsBUvPeH8gG4oI5_n3ry7HsIt6y",
+          "mode": "list",
+          "cachedResultName": "FAQ",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1IOazdNsBUvPeH8gG4oI5_n3ry7HsIt6y"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ff28a99b-b930-426f-8f5f-e160394f77a3",
+      "name": "Google Drive Trigger",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9PG0EDjGNJHFvbIm",
+          "name": "navinator835@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        220,
+        0
+      ],
+      "id": "a09c35f5-dd51-4521-b947-eecafbd43db2",
+      "name": "Download File",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "9PG0EDjGNJHFvbIm",
+          "name": "navinator835@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "project1",
+          "mode": "list",
+          "cachedResultName": "project1"
+        },
+        "options": {
+          "pineconeNamespace": "FAQ"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        440,
+        0
+      ],
+      "id": "603d014c-ca98-42eb-8d95-ef94bb892bc2",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "VfZJVfbZHjxcYLog",
+          "name": "Project 1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        380,
+        200
+      ],
+      "id": "613eccee-5d89-45cd-8083-e4f8dc87b8df",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "utcCgKFUWjxPgSyO",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "dataType": "binary",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        520,
+        160
+      ],
+      "id": "a32deb30-074d-4d2b-90cf-2b723fbbdc58",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        620,
+        300
+      ],
+      "id": "ca0dc177-b504-4d79-82ba-c689252067bb",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        980,
+        0
+      ],
+      "id": "3081f266-6a0c-4d58-8d7a-35ea8a9d048e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        840,
+        0
+      ],
+      "id": "31b13862-fb8a-4bd7-9e7a-e00233a5ed4f",
+      "name": "When chat message received",
+      "webhookId": "22723679-c688-467f-b2a9-a487e1454741"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-3.5-sonnet",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        940,
+        200
+      ],
+      "id": "d42a26f2-72c5-4156-b305-170db6455a10",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "I4QqqEzzjrNi3DTf",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to access Policy and FAQ database",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "project1",
+          "mode": "list",
+          "cachedResultName": "project1"
+        },
+        "options": {
+          "pineconeNamespace": "FAQ"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        1060,
+        200
+      ],
+      "id": "3f4fd007-100b-4f3d-af14-49016a02069d",
+      "name": "Pinecone Vector Store1",
+      "credentials": {
+        "pineconeApi": {
+          "id": "VfZJVfbZHjxcYLog",
+          "name": "Project 1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1140,
+        320
+      ],
+      "id": "2c3265ed-15c8-4ea0-b1d6-cf7c9325af4c",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "utcCgKFUWjxPgSyO",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 1.) RAG Pipeline & Chatbot",
+        "height": 80,
+        "width": 320,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        460,
+        -120
+      ],
+      "id": "5aa4af4b-44e5-43db-b41d-17978628ea53",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 2.) Customer Support Workflow ",
+        "height": 80,
+        "width": 400,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        440,
+        500
+      ],
+      "id": "fdeaff51-1eec-4dab-bd0e-1e96e010f93f",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -20,
+        620
+      ],
+      "id": "8768a566-84f2-4275-bb5a-7a6210a0fd76",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LSTP6S8Cp4Lm0tZb",
+          "name": "navinator835@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Customer Support ",
+              "description": "An email that is related to helping out a customer. They may be asking questions about our policies or questions about our products and services."
+            },
+            {
+              "category": "Other ",
+              "description": "Any email that is not customer support related. "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "typeVersion": 1.1,
+      "position": [
+        180,
+        620
+      ],
+      "id": "198fd978-3435-4e09-a147-0f72a7ad090a",
+      "name": "Text Classifier"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-4o-mini",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        140,
+        800
+      ],
+      "id": "54295944-ea03-4228-a0cf-37e4752e5b93",
+      "name": "OpenRouter Chat Model1",
+      "credentials": {
+        "openRouterApi": {
+          "id": "I4QqqEzzjrNi3DTf",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        320,
+        800
+      ],
+      "id": "f1184705-163b-4ec4-bd4a-214480c1d30d",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "# Overview \nYou are a customer support agent for Tech Haven. Your job is to respond to incoming emails with relevant information using your knowledgeBase tool. \n\n## Instructions \n- Your output should be friendly and use emojis. \n- Sign off as Mr. Helpful from Tech Haven Solutions.\n\n## Output \n- Output only the body content of the email. "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        560,
+        620
+      ],
+      "id": "4af85802-698b-4bba-ab60-bb1b76dc6775",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.0-flash-001",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        560,
+        800
+      ],
+      "id": "bd92b334-0909-4575-8d4a-1951583359cf",
+      "name": "OpenRouter Chat Model2",
+      "credentials": {
+        "openRouterApi": {
+          "id": "I4QqqEzzjrNi3DTf",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Call this tool to access Policy and FAQ information ",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "project1",
+          "mode": "list",
+          "cachedResultName": "project1"
+        },
+        "options": {
+          "pineconeNamespace": "FAQ"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        700,
+        840
+      ],
+      "id": "1904f25d-62e3-4b2d-905f-7ab4c36d73ce",
+      "name": "Pinecone Vector Store2",
+      "credentials": {
+        "pineconeApi": {
+          "id": "VfZJVfbZHjxcYLog",
+          "name": "Project 1"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        780,
+        980
+      ],
+      "id": "5da15167-a63b-4f29-8c90-179905645575",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "utcCgKFUWjxPgSyO",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1140,
+        620
+      ],
+      "id": "b8030682-83eb-49b6-8640-aa217ab300e8",
+      "name": "Gmail",
+      "webhookId": "7f7e6f67-0ae8-4522-a13f-f6e98fe7f829",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LSTP6S8Cp4Lm0tZb",
+          "name": "navinator835@gmail.com"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ $('Gmail Trigger').item.json.id }}",
+        "labelIds": [
+          "YELLOW_STAR"
+        ]
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        920,
+        620
+      ],
+      "id": "c65758d9-05e4-4c45-8360-0c191f11ea5f",
+      "name": "Gmail1",
+      "webhookId": "153e3d27-eb3f-41ab-83b9-ea852679a9f2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "LSTP6S8Cp4Lm0tZb",
+          "name": "navinator835@gmail.com"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "1979fb9ffd42d8d3",
+          "threadId": "1979fb9ffd42d8d3",
+          "labelIds": [
+            "UNREAD",
+            "CATEGORY_PERSONAL",
+            "INBOX"
+          ],
+          "sizeEstimate": 11667,
+          "headers": {
+            "delivered-to": "Delivered-To: navinator835@gmail.com",
+            "received": "Received: from AS2PR10MB7902.EURPRD10.PROD.OUTLOOK.COM\r\n ([fe80::479b:e5ef:e77:ccf3]) by AS2PR10MB7902.EURPRD10.PROD.OUTLOOK.COM\r\n ([fe80::479b:e5ef:e77:ccf3%7]) with mapi id 15.20.8857.026; Tue, 24 Jun 2025\r\n 02:17:34 +0000",
+            "x-google-smtp-source": "X-Google-Smtp-Source: AGHT+IGptMFxp7iQi366FVXzD+PAX29y9/QSH8qAjVDxvN8aGdCQRIx3QrDUDvNHp+WXtfcq5/Qa",
+            "x-received": "X-Received: by 2002:a05:6902:18d6:b0:e82:3cdc:aaef with SMTP id 3f1490d57ef6-e842bc87d00mr19289082276.19.1750731456037;\r\n        Mon, 23 Jun 2025 19:17:36 -0700 (PDT)",
+            "arc-seal": "ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;\r\n b=pGyltSzWVbQwwdxxWvUThoLC9QxzubBYhMZG0yo9yf1qwu5eJpRSKRVuzta6IeaTijt69Bj7ns9f+zKPZjo+XJndz5mVvugyw0HnDPU+JRcNYRr60knMPiy5D2ZSKK+HePCR68/TxV0RrHMypjJCXuIFQG9vhUdT4D/6scyp78OOWd9CBEPwWKJdxypdbnKwx9vB+rxP3Q2ZQjKQ6pLfzZCYrezu+he0QJ6hOT7HC0lfHbh0mUuqZkTYtiHHcbBy0Xa92y4ytPH1YuRDLjdVfaj1nhNxmNsT2SysTnCHo+lAuOlf2M+9lyi3it91vifqFlJa9nf3oTEY24vncSHhvw==",
+            "arc-message-signature": "ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;\r\n s=arcselector10001;\r\n h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;\r\n bh=kAuFBu/mFSQT3KvjfzdpDQKM9qXy+SeIQ8l/VsAxg04=;\r\n b=D6tEkRBi1jfMKxjeh/fry827Pi1NYl0gYqXmgHs8dmVpREdWdSmGwUBWYMvf/S9vQm/iExUoe8Yg+0Q3XNlMRulfpz5Bn9WpsyDJqdZ6NFJyPE7xGYXmr6LOk2WjDpgrpALXXwSsHcjxvqWSe6yHdX7rpR6NmNauyGe+cZWD7OhWjtz4BxXsCkYAFoxRaZIu80nsTHp3QTzM8oimZz2EjLRnpc0dLRm8g9vZvpafRM4rj3xqiJBI/yYa3y4rZgFaY3ucXYB68grUl/1N+NQ4inb3pY3T8/Y9vv3p3H7ykUAXALLBYM9dB/bEVb4WN+0FSnExwDdWtHcW0acTZs93LA==",
+            "arc-authentication-results": "ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;\r\n dkim=none; arc=none",
+            "return-path": "Return-Path: <navinator835@outlook.com>",
+            "received-spf": "Received-SPF: pass (google.com: domain of navinator835@outlook.com designates 2a01:111:f403:d200:: as permitted sender) client-ip=2a01:111:f403:d200::;",
+            "authentication-results": "Authentication-Results: mx.google.com;\r\n       dkim=pass header.i=@outlook.com header.s=selector1 header.b=QkQxe2jj;\r\n       arc=pass (i=1);\r\n       spf=pass (google.com: domain of navinator835@outlook.com designates 2a01:111:f403:d200:: as permitted sender) smtp.mailfrom=navinator835@outlook.com;\r\n       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=outlook.com",
+            "dkim-signature": "DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;\r\n s=selector1;\r\n h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;\r\n bh=kAuFBu/mFSQT3KvjfzdpDQKM9qXy+SeIQ8l/VsAxg04=;\r\n b=QkQxe2jjWsj7c4XWzFateOspdInCIyPdMd12+R0kShwety9JL80q/M4tF0i7tysDC7CiKLTfhr/oBiHYN82DXv7kF3L1lgfS7SBN6pskwl5k7okYgvugu03lZALmWAkk46u1zDXCR5FYS+pxi+tp1CpiqGcdJVB1FodGH6WW9LIMpTT58PsRCTFDXmpyM0Cy4A96EQWoxOxQw3AiqY8OJDaNlZpvVBomcPWNvJrzrZZuZGwjLqWazpBV789DtUA0K4+5os+oDI++myTonS6B7Ph94Pl3C4CKKHnrQz5FAdEUcmwgn1Q+kQdtvsgenanpRyDww0V3dJWxry+A5n/myg==",
+            "from": "From: Nav S <navinator835@outlook.com>",
+            "to": "To: \"navinator835@gmail.com\" <navinator835@gmail.com>",
+            "subject": "Subject: Question ",
+            "thread-topic": "Thread-Topic: Question ",
+            "thread-index": "Thread-Index: AQHb5K4lKNfBpL4kd0mWm3MGZ4daGg==",
+            "date": "Date: Tue, 24 Jun 2025 02:17:34 +0000",
+            "message-id": "Message-ID:\r\n <AS2PR10MB7902D4979C45D4D5C8D2EB579478A@AS2PR10MB7902.EURPRD10.PROD.OUTLOOK.COM>",
+            "accept-language": "Accept-Language: en-US",
+            "content-language": "Content-Language: en-US",
+            "x-ms-has-attach": "X-MS-Has-Attach:",
+            "x-ms-tnef-correlator": "X-MS-TNEF-Correlator:",
+            "msip_labels": "msip_labels:",
+            "x-ms-publictraffictype": "x-ms-publictraffictype: Email",
+            "x-ms-traffictypediagnostic": "x-ms-traffictypediagnostic: AS2PR10MB7902:EE_|GV2PR10MB6983:EE_",
+            "x-ms-office365-filtering-correlation-id": "x-ms-office365-filtering-correlation-id: 143756f2-c05e-4135-88fc-08ddb2c547e7",
+            "x-microsoft-antispam": "x-microsoft-antispam:\r\n BCL:0;ARA:14566002|8062599006|8060799009|461199028|15030799003|19110799006|15080799009|7092599006|7071999006|26104999006|440099028|39105399003|51005399003|40105399003|3430499032|3412199025|102099032|56899033;",
+            "x-microsoft-antispam-message-info": "x-microsoft-antispam-message-info:\r\n =?iso-8859-1?Q?qj4ecOFsxNGVffhomxwTo5+LquRA4V5BjFhuowtdPpFjEX96o+GyN4QKbV?=\r\n =?iso-8859-1?Q?PwCr85lue8KSW2HvSRaMvi/MdtZyIFssJ0z524Qd22HKINZMhXqHFiNMfM?=\r\n =?iso-8859-1?Q?KjIhaie68XECGGwxJV+RbuBlHapx/p082l0Ou/cMh9j5zbU3TESkAY3pCI?=\r\n =?iso-8859-1?Q?mizVBA/b4TDj/CNhKIG0NLqgahVeew+Nzqhm0+G+1LwT5Qh5rfkkLms9Oj?=\r\n =?iso-8859-1?Q?9TN32S2vCbU5pd5bTB8eclyr9R/1LTvsK/aupwEeO1MIHCBdTBVTMC+O6p?=\r\n =?iso-8859-1?Q?iOrfAYq7Lp9XiT7Z42thGB21e2lrXWx5MI132l7xlRdA+VoF+wigRRkPAo?=\r\n =?iso-8859-1?Q?qDtuONmHq57uLhuHBiWEK6inutSAopWlQYpVbkRFu8/9W7v1XJaHklcvZ0?=\r\n =?iso-8859-1?Q?jORNIDhcrsjVfRVYSk1H0rD0T++GxJYlvmvRXwgk30Lwly2M5ogvohuguq?=\r\n =?iso-8859-1?Q?XyYWCF4YSrAtuxk0ddzJ4n71egr89YPgP0D65mr2/du9ZoNEEBh6IZTUPr?=\r\n =?iso-8859-1?Q?+C+XE+4GR07cWezGxh5dz31GvnnZ5BnfVbkFZGp1Kz9hEmVCR2dQt+0JXf?=\r\n =?iso-8859-1?Q?liEKzLseL6cLrFNSlChqS7gmwNVPGXzJydiEG58AU3RnCUMNS3VyVUgsIJ?=\r\n =?iso-8859-1?Q?sq+gIsaVgnMnbEFElsOiMu6v+5S8WQHiovLLxrQZdtbQuykgNn96OxjfDu?=\r\n =?iso-8859-1?Q?+LYwQc9DfJCp+Xww3gFd1Vd45f+46RAW+50zjn9Ts8DkvxRY80D9BmAQcF?=\r\n =?iso-8859-1?Q?tTXelmXFRzramvZtAIpA6oIN1XyfeqtxiKexgthH//hG3qCjvxfzyC6EJa?=\r\n =?iso-8859-1?Q?pPzsPPkbr+zriDLlMTVEjGu87bN7hMCS/v2HmdTsdXU+dDfnS6aF3qcj7m?=\r\n =?iso-8859-1?Q?n0Pc85dChkgXq5hPecAZ/2AWQ9AVaY3I/E+H1Z7TnQ0PYTXJtS9yj9a4VM?=\r\n =?iso-8859-1?Q?0yeK+1P/1I/5ZQ2WizCYqqoXCJSIvlzwID0l5OhX5yJ2YOnji9WgP+xLmB?=\r\n =?iso-8859-1?Q?79/edZS0rfjUgn20jZD5gDo57ZB+fBwQ0JfBksGcRjHqSMqrzsCJDJZA1H?=\r\n =?iso-8859-1?Q?q8zFT5LYSzN28Nqm+Myv2HXFYrJFsMpceGoqDQI53F5IKYN1z7O9P1cvwP?=\r\n =?iso-8859-1?Q?1nxbUIfy5gjst6Sufjufr1XQDSfb6Yzr1cBliiWqAG9deLUEENXdMa6Pk5?=\r\n =?iso-8859-1?Q?6e3olltkwDdjMEsj8PPk7xOYxQEOzM5maZC1goehrmnKGEMpThYhFJ5uPB?=\r\n =?iso-8859-1?Q?I10a84Se7qlJw2ktmjBhufJ7Jt1lxFx13D7nzMzCuFMssLHTNOnbT5SMxa?=\r\n =?iso-8859-1?Q?dZg30ml3wmuYWPAiaMYIGpk2zh/8GbQlFRId77dxsFlbWf0=3D?=",
+            "x-ms-exchange-antispam-messagedata-chunkcount": "x-ms-exchange-antispam-messagedata-chunkcount: 1",
+            "x-ms-exchange-antispam-messagedata-0": "x-ms-exchange-antispam-messagedata-0:\r\n =?iso-8859-1?Q?6t5V6OANZbnuzYc3c9iu5oDjLyqhql8WEVTAQrgrTcPuo7Ho2wiEwZcaIe?=\r\n =?iso-8859-1?Q?D0WFT5qShAnlrPdaYMdrb3un7UwJPUU2fLqj6DZgpklvsSB6ZYG+6CEM2g?=\r\n =?iso-8859-1?Q?oit8lsiiMaZFwGAxVVKIxVs/WGm5cSTBxDWponImvFTbTSdxMQOsruFo2n?=\r\n =?iso-8859-1?Q?sicn9ZGVG3QdO3izcqDV3/kIAHNj5hkXYDX7Uh/Hkad2CNcYZpNnSDPoZz?=\r\n =?iso-8859-1?Q?BVHPO0axQu9Em+1BFqM0QrgJnZ+ilz10ew8WsN89Hg2Ezlljmqxw4xuIn/?=\r\n =?iso-8859-1?Q?3HAtDWan0Sa8qU9ry1LjpG1ooGfYZ7wjFkMEujUKeo3a7CusIWnn62Z2br?=\r\n =?iso-8859-1?Q?FbdvIzANYANfHKI4/rigq9OWvybR2lOR/JpN2Uue4uAn6bTDD5o459+nMA?=\r\n =?iso-8859-1?Q?I69YaRqkMDFE1IzfQ0Jm1K9VtwtrwubLhPpNHU86z9Lm8xEgtwr9U6sJbV?=\r\n =?iso-8859-1?Q?x/idY+pUIH0c2jCQefu6w3P4MQXhoQn8vXA8XLiflU8KCAV0gyLIibPn2a?=\r\n =?iso-8859-1?Q?MBG3MjBGvX80Czwsw6ksBuU9jVaZF2p+lvb+eOvT/tzcrCaipfJGCcPbyH?=\r\n =?iso-8859-1?Q?CswF6RcGp5vTR6PDfKtarfVQGoYWIWcyB5T0UoRKqU5jYAT+jB+zgICIAK?=\r\n =?iso-8859-1?Q?2ArtZmEWjnaihZIJQXyLnL0Fu45rWeCflgFgNFD0jDMYYRkI+tGew3uaog?=\r\n =?iso-8859-1?Q?Ja2nFVp8E9BtvL6lKsqN/ax1Py7Blnm848qOGnTYCa1pdC0em2DoSc4KdG?=\r\n =?iso-8859-1?Q?bMW3Sav66ZU/bNJtbpEdnQppk+TSixhe/x4jVkE9jdlRJj7+jEKv6OsOG8?=\r\n =?iso-8859-1?Q?C+iVbUKSlblBaGqsVyu0LeXeQLPxa62TXaDPkjgzuRcDHfnSlsQ/eCRjFr?=\r\n =?iso-8859-1?Q?knV6IWW7gtVuPdI3U52reT39m4wRtY3FbSkeVx7LCB7JQgEgu9Sug+W8q5?=\r\n =?iso-8859-1?Q?MUwDn7qovFUhPRRfJ48RnkTE9Rf4CfvwbguVvm0L9AcZnQB3cxOKJTxwdo?=\r\n =?iso-8859-1?Q?2ycandwTUUc6R6Oq5N54aTPmC2m6AB4u0CdDZd6Co1a9gwTBb3hcqtKgm4?=\r\n =?iso-8859-1?Q?SheUGkHsgHORe4dKJlKd9ujq61pyskfTmjLWjIuFUZYjZtGn9lyr4ffNfO?=\r\n =?iso-8859-1?Q?5x2Z57lqUidHQjgXAmbuCXA3V/m/4a1oW54xnbKc3gN1GHNj+lV5owUQ5T?=\r\n =?iso-8859-1?Q?IzZGWGO4Jga0ua+JfAxauj4JhLZMKCV4jZs08IwVyEHb1tWHeObvV9RD5r?=\r\n =?iso-8859-1?Q?AvXfVeH/I44h92193bIzPNX+Lge50ppBUbi4FDtTs=3D?=",
+            "content-type": "Content-Type: multipart/alternative;\r\n\tboundary=\"_000_AS2PR10MB7902D4979C45D4D5C8D2EB579478AAS2PR10MB7902EURP_\"",
+            "mime-version": "MIME-Version: 1.0",
+            "x-originatororg": "X-OriginatorOrg: outlook.com",
+            "x-ms-exchange-crosstenant-authas": "X-MS-Exchange-CrossTenant-AuthAs: Internal",
+            "x-ms-exchange-crosstenant-authsource": "X-MS-Exchange-CrossTenant-AuthSource: AS2PR10MB7902.EURPRD10.PROD.OUTLOOK.COM",
+            "x-ms-exchange-crosstenant-rms-persistedconsumerorg": "X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000",
+            "x-ms-exchange-crosstenant-network-message-id": "X-MS-Exchange-CrossTenant-Network-Message-Id: 143756f2-c05e-4135-88fc-08ddb2c547e7",
+            "x-ms-exchange-crosstenant-originalarrivaltime": "X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2025 02:17:34.0943\r\n (UTC)",
+            "x-ms-exchange-crosstenant-fromentityheader": "X-MS-Exchange-CrossTenant-fromentityheader: Hosted",
+            "x-ms-exchange-crosstenant-id": "X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa",
+            "x-ms-exchange-transport-crosstenantheadersstamped": "X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR10MB6983"
+          },
+          "html": "<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n<style type=\"text/css\" style=\"display:none;\"> P {margin-top:0;margin-bottom:0;} </style>\n</head>\n<body dir=\"ltr\">\n<div class=\"elementToProof\" style=\"font-family: Aptos, Aptos_EmbeddedFont, Aptos_MSFontService, Calibri, Helvetica, sans-serif; font-size: 12pt; color: black;\">\nWhat is the privacy policy? I am concerned about my data and my passwords!!! Thank You.</div>\n</body>\n</html>\n",
+          "text": "What is the privacy policy? I am concerned about my data and my passwords!!! Thank You.\n",
+          "textAsHtml": "<p>What is the privacy policy? I am concerned about my data and my passwords!!! Thank You.</p>",
+          "subject": "Question",
+          "date": "2025-06-24T02:17:34.000Z",
+          "to": {
+            "value": [
+              {
+                "address": "navinator835@gmail.com",
+                "name": ""
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><a href=\"mailto:navinator835@gmail.com\" class=\"mp_address_email\">navinator835@gmail.com</a></span>",
+            "text": "navinator835@gmail.com"
+          },
+          "from": {
+            "value": [
+              {
+                "address": "navinator835@outlook.com",
+                "name": "Nav S"
+              }
+            ],
+            "html": "<span class=\"mp_address_group\"><span class=\"mp_address_name\">Nav S</span> &lt;<a href=\"mailto:navinator835@outlook.com\" class=\"mp_address_email\">navinator835@outlook.com</a>&gt;</span>",
+            "text": "\"Nav S\" <navinator835@outlook.com>"
+          },
+          "messageId": "<AS2PR10MB7902D4979C45D4D5C8D2EB579478A@AS2PR10MB7902.EURPRD10.PROD.OUTLOOK.COM>"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Drive Trigger": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bcb25c82-a691-472b-9a08-47da16c35486",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "cf995305b30eeb2ed4c5b88832fedcd3a22d43f8cc227cbb623d7b7cb2d7d9c6"
+  },
+  "id": "fKkCgWCLWqemuLmu",
+  "tags": []
+}
